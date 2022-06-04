@@ -1,5 +1,10 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, signInWithRedirect, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import {
+  getAuth,
+  signInWithPopup,
+  GoogleAuthProvider,
+  createUserWithEmailAndPassword,
+} from 'firebase/auth';
 import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
 
 // Your web app's Firebase configuration
@@ -30,11 +35,7 @@ export const createUserDocumentFromAuth = async (userAuth) => {
   // Check if collection/document exists in DB, returns document ref regardless if collection or document exist. (i.e. google will return a valid ref even if objects dont exist in DB since Google has necessary info from call to return a valid ref that can be used to be able to set document data to collection/document that might not yet exist)
   const userDocRef = doc(db, 'users', userAuth.uid);
 
-  console.log(userDocRef);
-
   const userSnapshot = await getDoc(userDocRef);
-  console.log(userSnapshot);
-  console.log(userSnapshot.exists());
 
   // if user does not exist
   if (!userSnapshot.exists()) {
@@ -52,4 +53,10 @@ export const createUserDocumentFromAuth = async (userAuth) => {
     }
   }
   return userDocRef;
+};
+
+export const createAuthUserWithEmailAndPassword = async (email, password) => {
+  if (!email || !password) return;
+
+  return await createUserWithEmailAndPassword(auth, email, password);
 };
